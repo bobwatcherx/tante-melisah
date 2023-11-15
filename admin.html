@@ -1,73 +1,35 @@
-<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
-    <!-- Bootstrap CSS from CDN -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>HTML Files</title>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Create Page</h2>
-        <form id="createForm">
-            <div class="form-group">
-                <label for="htmlContent">HTML Content:</label>
-                <textarea class="form-control" id="htmlContent" rows="8"></textarea>
-            </div>
-            <button type="button" class="btn btn-primary" onclick="createPage()">Create Page</button>
-        </form>
-    </div>
-
-    <!-- Bootstrap JS from CDN -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-OJYy3lu1wW7jdwe4fLweDpL1/PX7WbWSZUPxP6HP73UZfCt3sm1UHyErCN0sZc1a" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIJYNh9xMxSNAKlD4U5e7nHqIzD6PpqqjO1S3Z" crossorigin="anonymous"></script>
+    <h1>List of HTML Files</h1>
+    <ul id="fileList"></ul>
 
     <script>
-        function createPage() {
-            // Mengambil konten HTML dari textarea
-            var htmlContent = document.getElementById('htmlContent').value;
+        // URL ke endpoint yang memberikan daftar file
+        const endpoint = '/pages';
 
-            // Mendapatkan waktu saat ini untuk digunakan sebagai nama file
-            var now = new Date();
-            var fileName = '/pages/' + now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getTime() + '.html';
+        // Ambil daftar file menggunakan Fetch API
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                const fileListElement = document.getElementById('fileList');
 
-            // Variabel yang berisi template
-            var datap = `<meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta property="og:type" content="article" />
-                <meta property="og:image" content="https://asset.kompas.com/crops/NbazE1jdbc94vnckgLisnOaCA_k=/1x0:2000x1333/780x390/filters:watermark(data/photo/2020/03/10/5e6775b55942a.png,0,-0,1)/data/photo/2023/11/15/6554093c96efe.jpg" />
-                <meta property="og:title" content="Piala Dunia U17 2023, Kala Kapten Akademi Man United Betah di Indonesia..." />
-                <meta property="og:description" content="Pemain timnas U17 Inggris, Finley McAllister, mengaku betah berada di Indonesia ketika menjalani Piala Dunia U17 2023." />
-                <meta property="og:url" content="https://bola.kompas.com/read/2023/11/15/06594438/piala-dunia-u17-2023-kala-kapten-akademi-man-united-betah-di-indonesia" />
-                <meta property="og:site_name" content="KOMPAS.com" />
-                <meta property="fb:app_id" content="324557847592228" />
-
-                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></" + "script>
-                <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-OJYy3lu1wW7jdwe4fLweDpL1/PX7WbWSZUPxP6HP73UZfCt3sm1UHyErCN0sZc1a" crossorigin="anonymous"></" + "script>
-                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIJYNh9xMxSNAKlD4U5e7nHqIzD6PpqqjO1S3Z" crossorigin="anonymous"></" + "script>
-                `;
-
-            var fullTemplate = datap + htmlContent 
-
-
-            // Menambahkan nilai dari input htmlContent ke dalam variabel datap
-            datap = datap.replace('<!-- CONTENT HERE -->', htmlContent);
-
-            // Membuat file dengan konten HTML di dalam folder 'pages'
-            var blob = new Blob([fullTemplate], { type: 'text/html' });
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            alert('Page created successfully!');
-        }
+                // Tampilkan setiap file sebagai tautan
+                data.files.forEach(file => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `/pages/${file}`;
+                    link.textContent = file;
+                    listItem.appendChild(link);
+                    fileListElement.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error fetching file list:', error));
     </script>
 </body>
 </html>
